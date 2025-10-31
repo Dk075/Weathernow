@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>WeatherNow — Warm Edition</title>
+<meta name="description" content="WeatherNow — live weather, radar and 10-day forecast with warm animated theme." />
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo-wrap">
+      <div class="logo-anim">WeatherNow</div>
+      <div class="tag">Real-time weather & forecasts</div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="articles.html">Weather Articles</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero card">
+      <div class="hero-left">
+        <h1 class="hero-title">See live weather & radar — fast</h1>
+        <p class="lead">Search any city or use your location. Warm theme with smooth animations.</p>
+        <div class="controls">
+          <input id="cityInput" placeholder="Enter city (e.g. Patna, London)" />
+          <button id="searchBtn" onclick="searchCity()" class="btn pulse">Search</button>
+          <button class="btn ghost" onclick="detectLocation()">Use my location</button>
+        </div>
+        <div id="status" class="muted"></div>
+      </div>
+      <div class="hero-right">
+        <div class="card small-card">
+          <div id="output" class="output">No data yet — try search or detect location.</div>
+          <div id="loader" class="loader" aria-hidden="true"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid card">
+      <div class="forecast card">
+        <h3 id="placeLabel">10-Day Forecast</h3>
+        <canvas id="forecastChart"></canvas>
+      </div>
+
+      <div class="radar card">
+        <h3>Live Radar</h3>
+        <iframe id="radarFrame" src="https://embed.windy.com/embed2.html?lat=28.61&lon=77.23&zoom=5&level=surface&overlay=rain" title="Live radar"></iframe>
+      </div>
+    </section>
+
+    <section class="articles-preview card">
+      <h3>Latest Articles</h3>
+      <div class="articles-row" id="articlesRow">
+        <article class="article-card">
+          <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d" alt="weather">
+          <h4>India Weekly Weather Report – Nov 2025</h4>
+          <p class="muted small">Oct 30, 2025</p>
+          <p>Expect mixed skies across northern India, with mild showers in some areas. Read tips to stay safe outdoors.</p>
+        </article>
+        <article class="article-card">
+          <img src="https://images.unsplash.com/photo-1601132359864-3c9b5f0d5b9d" alt="rain">
+          <h4>Southern India Monsoon Notes</h4>
+          <p class="muted small">Oct 28, 2025</p>
+          <p>Coastal regions should prepare for light to moderate rain; humid conditions persist.</p>
+        </article>
+      </div>
+      <a class="btn outline" href="articles.html">Explore all articles</a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2025 WeatherNow • Data by Open-Meteo • Contact: darkestweb07@gmail.com</p>
+  </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
+<footer>
+<p>&copy; 2025 Weather Now | <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms & Conditions</a></p>
+</footer>
+</body>
+</html>
