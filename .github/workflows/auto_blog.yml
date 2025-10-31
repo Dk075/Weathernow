@@ -1,1 +1,62 @@
+name: Auto Blog Generator (Weather Now)
 
+on:
+  schedule:
+    - cron: "0 6,12,18 * * *"  # 3 times per day (6 AM, 12 PM, 6 PM UTC)
+  workflow_dispatch:  # allow manual runs
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install openai python-frontmatter requests pillow
+
+      - name: Generate Blog Posts
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          import os, openai, requests, random, datetime, frontmatter
+          from PIL import Image
+          from io import BytesIO
+
+          topics = ["Weather", "Science", "Nature", "News", "Today Weather"]
+          topic = random.choice(topics)
+
+          prompt = f"Write a 500-word blog post in human style about {topic}. Include interesting facts and helpful context. Title should be short and catchy."
+
+          response = openai.chat.completions.create(
+              model="gpt-4o-mini",
+              messages=[{"role": "user", "content": prompt}]
+          )
+
+          content = response.choices[0].message.content
+          title = content.split("\n")[0].replace("#", "").strip()
+
+          folder = "articles"
+          os.makedirs(folder, exist_ok=True)
+          filename = f"{folder}/{datetime.datetime.now().strftime('%Y-%m-%d-%H%M')}.md"
+
+          # Save article
+          with open(filename, "w", encoding="utf-8") as f:
+              f.write(f"# {title}\n\n{content}")
+
+          print(f"✅ Blog generated: {filename}")
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "📝 Auto blog update"
+          git push
+          
