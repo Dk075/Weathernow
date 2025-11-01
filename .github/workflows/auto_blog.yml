@@ -25,6 +25,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
+          python - <<'EOF'
           import os, openai, requests, random, datetime, frontmatter
           from PIL import Image
           from io import BytesIO
@@ -32,25 +33,27 @@ jobs:
           topics = ["Weather", "Science", "Nature", "News", "Today Weather"]
           topic = random.choice(topics)
 
-          prompt = f"Write a 500-word blog post in human style about {topic}. Include interesting facts and helpful context. Title should be short and catchy."
+          prompt = f"Write a 500-word blog post in natural human style about {topic}. Include interesting facts and helpful context. Title should be short and catchy."
 
-          response = openai.chat.completions.create(
+          openai.api_key = os.getenv("OPENAI_API_KEY")
+
+          response = openai.ChatCompletion.create(
               model="gpt-4o-mini",
               messages=[{"role": "user", "content": prompt}]
           )
 
-          content = response.choices[0].message.content
+          content = response.choices[0].message["content"]
           title = content.split("\n")[0].replace("#", "").strip()
 
           folder = "articles"
           os.makedirs(folder, exist_ok=True)
           filename = f"{folder}/{datetime.datetime.now().strftime('%Y-%m-%d-%H%M')}.md"
 
-          # Save article
           with open(filename, "w", encoding="utf-8") as f:
               f.write(f"# {title}\n\n{content}")
 
           print(f"✅ Blog generated: {filename}")
+          EOF
 
       - name: Commit and push changes
         run: |
