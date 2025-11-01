@@ -3,7 +3,7 @@ name: Auto Blog Generator (Weather Now)
 on:
   schedule:
     - cron: "0 6,12,18 * * *"  # 3 times per day (6 AM, 12 PM, 6 PM UTC)
-  workflow_dispatch:  # allow manual runs
+  workflow_dispatch:
 
 jobs:
   generate:
@@ -25,35 +25,34 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          python - <<'EOF'
-          import os, openai, requests, random, datetime, frontmatter
-          from PIL import Image
-          from io import BytesIO
+          echo "Starting blog generation..."
+          python3 <<'EOF'
+import os, openai, requests, random, datetime
 
-          topics = ["Weather", "Science", "Nature", "News", "Today Weather"]
-          topic = random.choice(topics)
+topics = ["Weather", "Science", "Nature", "News", "Today Weather"]
+topic = random.choice(topics)
 
-          prompt = f"Write a 500-word blog post in natural human style about {topic}. Include interesting facts and helpful context. Title should be short and catchy."
+prompt = f"Write a 500-word blog post in natural human style about {topic}. Include interesting facts and helpful context. Title should be short and catchy."
 
-          openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
-          response = openai.ChatCompletion.create(
-              model="gpt-4o-mini",
-              messages=[{"role": "user", "content": prompt}]
-          )
+response = openai.ChatCompletion.create(
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": prompt}]
+)
 
-          content = response.choices[0].message["content"]
-          title = content.split("\n")[0].replace("#", "").strip()
+content = response.choices[0].message["content"]
+title = content.split("\\n")[0].replace("#", "").strip()
 
-          folder = "articles"
-          os.makedirs(folder, exist_ok=True)
-          filename = f"{folder}/{datetime.datetime.now().strftime('%Y-%m-%d-%H%M')}.md"
+folder = "articles"
+os.makedirs(folder, exist_ok=True)
+filename = f"{folder}/{datetime.datetime.now().strftime('%Y-%m-%d-%H%M')}.md"
 
-          with open(filename, "w", encoding="utf-8") as f:
-              f.write(f"# {title}\n\n{content}")
+with open(filename, "w", encoding="utf-8") as f:
+    f.write(f"# {title}\\n\\n{content}")
 
-          print(f"✅ Blog generated: {filename}")
-          EOF
+print(f"✅ Blog generated: {filename}")
+EOF
 
       - name: Commit and push changes
         run: |
@@ -62,4 +61,3 @@ jobs:
           git add .
           git commit -m "📝 Auto blog update"
           git push
-          
